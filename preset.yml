@@ -1,0 +1,37 @@
+schema_version: "1.0"
+
+preset:
+  id: "research-to-impact-ar"
+  name: "Research to Impact AR"
+  version: "0.1.0"
+  description: "Arabic evidence, review, rights, and impact gates for small research and education projects"
+  author: "Khibrat Taibah for Research and Studies"
+  repository: "https://github.com/khibrattaibah/khibratgit"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=0.12.0"
+
+provides:
+  templates:
+    - type: "template"
+      name: "constitution-template"
+      file: "templates/constitution-template.md"
+      description: "Arabic project governance and evidence rules"
+      replaces: "constitution-template"
+    - type: "template"
+      name: "spec-template"
+      file: "templates/spec-template.md"
+      description: "Arabic source-backed feature specification"
+      replaces: "spec-template"
+    - type: "template"
+      name: "plan-template"
+      file: "templates/plan-template.md"
+      description: "Arabic lean implementation and evaluation plan"
+      replaces: "plan-template"
+
+tags:
+  - "arabic"
+  - "research"
+  - "education"
+  - "evidence"
