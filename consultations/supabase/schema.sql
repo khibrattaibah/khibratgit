@@ -30,23 +30,47 @@ create table if not exists public.consultation_requests (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.admin_users (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
 create or replace function public.set_updated_at() returns trigger language plpgsql as $$
 begin new.updated_at=now(); return new; end; $$;
+
 drop trigger if exists trg_consultation_updated_at on public.consultation_requests;
-create trigger trg_consultation_updated_at before update on public.consultation_requests for each row execute function public.set_updated_at();
+create trigger trg_consultation_updated_at
+before update on public.consultation_requests
+for each row execute function public.set_updated_at();
 
 alter table public.consultation_requests enable row level security;
+alter table public.admin_users enable row level security;
 
 drop policy if exists "public can submit consultation" on public.consultation_requests;
-create policy "public can submit consultation" on public.consultation_requests for insert to anon with check (scope_consent = true and privacy_consent = true);
+create policy "public can submit consultation"
+on public.consultation_requests
+for insert to anon
+with check (scope_consent = true and privacy_consent = true);
 
-drop policy if exists "authenticated can read consultation" on public.consultation_requests;
-create policy "authenticated can read consultation" on public.consultation_requests for select to authenticated using (true);
+drop policy if exists "admins can read consultation" on public.consultation_requests;
+create policy "admins can read consultation"
+on public.consultation_requests
+for select to authenticated
+using (exists(select 1 from public.admin_users a where a.user_id = auth.uid()));
 
-drop policy if exists "authenticated can update consultation" on public.consultation_requests;
-create policy "authenticated can update consultation" on public.consultation_requests for update to authenticated using (true) with check (true);
+drop policy if exists "admins can update consultation" on public.consultation_requests;
+create policy "admins can update consultation"
+on public.consultation_requests
+for update to authenticated
+using (exists(select 1 from public.admin_users a where a.user_id = auth.uid()))
+with check (exists(select 1 from public.admin_users a where a.user_id = auth.uid()));
 
--- يسمح بإرجاع public_id مباشرة بعد الإدخال دون كشف الصفوف الأخرى
+drop policy if exists "admins can see own admin row" on public.admin_users;
+create policy "admins can see own admin row"
+on public.admin_users
+for select to authenticated
+using (user_id = auth.uid());
+
 create or replace function public.submit_consultation(payload jsonb)
 returns text
 language plpgsql
@@ -55,9 +79,31 @@ set search_path=public
 as $$
 declare rid text;
 begin
- insert into public.consultation_requests(full_name,email,phone,country,city,role,organization,consultation_area,challenge,tried,desired_outcome,current_stage,reference_url,urgency,followup_interest,scope_consent,privacy_consent)
- values(payload->>'full_name',payload->>'email',payload->>'phone',payload->>'country',payload->>'city',payload->>'role',payload->>'organization',payload->>'consultation_area',payload->>'challenge',payload->>'tried',payload->>'desired_outcome',payload->>'current_stage',payload->>'reference_url',payload->>'urgency',payload->>'followup_interest',coalesce((payload->>'scope_consent')::boolean,false),coalesce((payload->>'privacy_consent')::boolean,false))
- returning public_id into rid;
- return rid;
+  if coalesce((payload->>'scope_consent')::boolean,false) is not true
+     or coalesce((payload->>'privacy_consent')::boolean,false) is not true then
+    raise exception 'consent_required';
+  end if;
+
+  insert into public.consultation_requests(
+    full_name,email,phone,country,city,role,organization,consultation_area,
+    challenge,tried,desired_outcome,current_stage,reference_url,urgency,
+    followup_interest,scope_consent,privacy_consent
+  )
+  values(
+    payload->>'full_name',payload->>'email',payload->>'phone',payload->>'country',
+    payload->>'city',payload->>'role',payload->>'organization',payload->>'consultation_area',
+    payload->>'challenge',payload->>'tried',payload->>'desired_outcome',
+    payload->>'current_stage',payload->>'reference_url',payload->>'urgency',
+    payload->>'followup_interest',true,true
+  )
+  returning public_id into rid;
+
+  return rid;
 end $$;
-grant execute on function public.submit_consultation(jsonb) to anon;
+
+revoke all on function public.submit_consultation(jsonb) from public;
+grant execute on function public.submit_consultation(jsonb) to anon, authenticated;
+
+-- بعد إنشاء مستخدم الإدارة من Supabase Auth نفّذ مرة واحدة:
+-- insert into public.admin_users(user_id)
+-- select id from auth.users where email='ADMIN_EMAIL_HERE';
