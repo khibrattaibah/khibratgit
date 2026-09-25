@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>استشارة خبرات | مكتب خبرات طيبة</title>
+<meta name="description" content="مبادرة استشارة خبرات الأسبوعية المجانية من مكتب خبرات طيبة للبحوث والدراسات بالمدينة المنورة.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="wrap nav"><div class="brand"><div class="logo-slot">مكان الشعار</div><div><strong>مكتب خبرات طيبة</strong><small>للبحوث والدراسات</small></div></div><a href="#apply" class="btn small">اطلب استشارة</a></div></header>
+<main>
+<section class="hero"><div class="wrap hero-grid">
+<div><span class="eyebrow">مبادرة أسبوعية مجانية</span><h1>استشارة خبرات</h1><p class="lead">اعرض التحدي علينا، ونوصلك بالخبرة الأنسب.</p><p>مبادرة يقدمها مكتب خبرات طيبة للبحوث والدراسات بالمدينة المنورة لدعم الباحثين والمؤسسات وأصحاب المشاريع العلمية والمعرفية.</p><div class="hero-actions"><a class="btn" href="#apply">ابدأ طلبك</a><a class="btn ghost" href="#how">كيف تعمل المبادرة؟</a></div></div>
+<div class="stats"><div><b>3</b><span>استشارات أسبوعيًا</span></div><div><b>30</b><span>دقيقة لكل جلسة</span></div><div><b>عن بُعد</b><span>عبر Google Meet</span></div><div><b>مجانية</b><span>بعد مراجعة الطلب</span></div></div>
+</div></section>
+
+<section class="section"><div class="wrap"><div class="section-head"><span class="eyebrow">المجالات</span><h2>أين يمكن أن نساعد؟</h2></div>
+<div class="cards" id="areas"></div></div></section>
+
+<section class="section alt" id="how"><div class="wrap"><div class="section-head"><span class="eyebrow">آلية العمل</span><h2>من الطلب إلى الجلسة</h2></div>
+<div class="steps">
+<div><i>1</i><b>تقديم الطلب</b><p>تصف التحدي والنتيجة التي تريد الوصول إليها.</p></div>
+<div><i>2</i><b>المراجعة والفرز</b><p>يراجع الفريق الطلب ويقيّم مدى ملاءمته للمبادرة.</p></div>
+<div><i>3</i><b>اختيار المستشار</b><p>يوجّه الطلب إلى صاحب الخبرة الأنسب.</p></div>
+<div><i>4</i><b>الحجز</b><p>للحالات المقبولة فقط يرسل رابط اختيار الموعد عبر Luma.</p></div>
+<div><i>5</i><b>الجلسة</b><p>30 دقيقة عبر Google Meet للتركيز على المشكلة والخطوة التالية.</p></div>
+<div><i>6</i><b>المتابعة</b><p>ملخص توصيات واستبيان رضا لقياس الأثر.</p></div>
+</div></div></section>
+
+<section class="section" id="apply"><div class="wrap narrow"><div class="section-head"><span class="eyebrow">طلب الاستشارة</span><h2>أخبرنا عن التحدي</h2><p>تقديم الطلب لا يعني تأكيد الموعد تلقائيًا. تتم مراجعة الطلبات واختيار الحالات التي يمكن تقديم قيمة عملية لها خلال 30 دقيقة.</p></div>
+<form id="consultationForm" class="form-card">
+<div class="grid2"><label>الاسم الكامل*<input name="full_name" required></label><label>البريد الإلكتروني*<input name="email" type="email" required></label></div>
+<div class="grid2"><label>رقم التواصل<input name="phone"></label><label>الدولة<input name="country"></label></div>
+<div class="grid2"><label>المدينة<input name="city"></label><label>الصفة<select name="role"><option value="">اختر</option><option>باحث</option><option>عضو هيئة تدريس</option><option>طالب دراسات عليا</option><option>محرر مجلة علمية</option><option>مسؤول مؤسسة</option><option>صاحب مشروع</option><option>جهة تعليمية أو بحثية</option><option>ناشر</option><option>أخرى</option></select></label></div>
+<label>اسم الجهة<input name="organization"></label>
+<label>مجال الاستشارة*<select name="consultation_area" id="areaSelect" required><option value="">اختر المجال</option></select></label>
+<label>ما المشكلة أو التحدي الذي تواجهه حاليًا؟*<textarea name="challenge" maxlength="800" required></textarea><small><span id="challengeCount">0</span>/800</small></label>
+<label>ما الذي جربته حتى الآن؟<textarea name="tried"></textarea></label>
+<label>ما النتيجة التي ترغب في الوصول إليها من جلسة الـ30 دقيقة؟*<textarea name="desired_outcome" required></textarea></label>
+<div class="grid2"><label>المرحلة الحالية<select name="current_stage"><option>فكرة أولية</option><option>بدأت التنفيذ</option><option>واجهت مشكلة أثناء التنفيذ</option><option>مشروع قائم يحتاج تطويرًا</option><option>أحتاج اتخاذ قرار</option><option>أحتاج تقييم مسار قائم</option></select></label>
+<label>مدى الحاجة<select name="urgency"><option>خلال أسبوع</option><option>خلال أسبوعين</option><option>خلال شهر</option><option>لا يوجد موعد محدد</option></select></label></div>
+<label>رابط ملف أو موقع مساعد<input name="reference_url" type="url" placeholder="https://"></label>
+<label>إذا احتاج الموضوع خدمة تنفيذية مستقلة، هل ترغب في تصور من المكتب؟<select name="followup_interest"><option>نعم</option><option>ربما</option><option>لا</option></select></label>
+<label class="check"><input name="scope_consent" type="checkbox" required> <span>أفهم أن الاستشارة المجانية للتشخيص والتوجيه وتقديم توصيات أولية، ولا تشمل تنفيذ مشروع كامل أو مراجعة ملفات كاملة ما لم يتم الاتفاق على خدمة مستقلة.</span></label>
+<label class="check"><input name="privacy_consent" type="checkbox" required> <span>أوافق على استخدام البيانات التي أقدمها لغرض دراسة الطلب وتنظيم الاستشارة والتواصل بشأنها.</span></label>
+<div id="formMsg" class="msg" hidden></div><button class="btn full" type="submit">إرسال طلب الاستشارة</button>
+</form></div></section>
+</main>
+<footer><div class="wrap">مكتب خبرات طيبة للبحوث والدراسات - المدينة المنورة</div></footer>
+<script src="./app.js"></script>
+</body></html>
